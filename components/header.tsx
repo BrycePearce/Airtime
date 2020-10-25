@@ -14,20 +14,20 @@ const Header: React.FC = () => {
       <a className="text-xl">Airtime</a>
       <nav className="h-full ml-16">
         <ul className="flex h-full">
-          <li className="flex h-full justify-center items-center mx-4 relative active">
-            <a>Browse</a>
+          <li className="flex mx-4 relative active">
+            <a className="h-full inline-flex items-center">Browse</a>
           </li>
-          <li className="flex h-full justify-center items-center mx-4 relative">
-            <a>Seasons</a>
+          <li className="flex mx-4 relative">
+            <a className="h-full inline-flex items-center">Seasons</a>
           </li>
-          <li className="flex h-full justify-center items-center mx-4 relative">
-            <a>Schedule</a>
+          <li className="flex mx-4 relative">
+            <a className="h-full inline-flex items-center">Schedule</a>
           </li>
-          <li className="flex h-full justify-center items-center mx-4 relative">
-            <a>Headlines</a>
+          <li className="flex mx-4 relative">
+            <a className="h-full inline-flex items-center">Headlines</a>
           </li>
-          <li className="flex h-full justify-center items-center mx-4 relative">
-            <a>Videos</a>
+          <li className="flex mx-4 relative">
+            <a className="h-full inline-flex items-center">Videos</a>
           </li>
         </ul>
       </nav>
