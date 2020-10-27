@@ -1,0 +1,40 @@
+.header {
+  @apply grid bg-gray-200 fixed w-full;
+  min-height: 4rem;
+  grid-template-columns: minmax(15%, auto) 1fr 2fr;
+  grid-template-areas: "branding navigation userIcons";
+
+  .branding {
+    grid-area: branding;
+    @extend .flex-center;
+  }
+
+  .navigation {
+    grid-area: navigation;
+    @extend .flex-center;
+  }
+
+  .userIcons {
+    grid-area: userIcons;
+    justify-self: end;
+    @extend .flex-center;
+  }
+
+  // tailwind:sm (ipad)
+  @media (min-width: 640px) {
+    grid-template-areas:
+      "branding userIcons userIcons"
+      "navigation navigation navigation";
+  }
+
+  // tailwind:lg (desktop)
+  @media (min-width: 1024px) {
+    grid-template-areas:
+      "branding navigation userIcons"
+  }
+}
+
+// Utils
+.flex-center {
+  @apply flex items-center;
+}
