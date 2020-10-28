@@ -1,6 +1,9 @@
+@import "../../styles/variables";
+
 .header {
-  @apply grid bg-gray-200 fixed w-full;
-  min-height: 4rem;
+  @apply grid bg-dark-theme-light fixed w-full;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  min-height: $minHeaderHeight;
   grid-template-columns: minmax(15%, auto) 1fr 2fr;
   grid-template-areas: "branding navigation userIcons";
 
@@ -15,6 +18,7 @@
   }
 
   .userIcons {
+    @apply fill-current;
     grid-area: userIcons;
     justify-self: end;
     @extend .flex-center;

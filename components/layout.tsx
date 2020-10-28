@@ -1,7 +1,8 @@
 import React from "react";
 
 // Components
-import Header from "./header";
+import CardGrid from "./card-grid/card-grid";
+import Header from "./header/header";
 import Meta from "./meta";
 
 const Layout: React.FC = () => {
@@ -9,6 +10,7 @@ const Layout: React.FC = () => {
     <>
       <Meta />
       <Header />
+      <CardGrid />
     </>
   );
 };

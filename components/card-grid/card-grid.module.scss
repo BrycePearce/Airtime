@@ -1,0 +1,7 @@
+@import "../../styles/variables";
+
+.cardGrid {
+    @apply grid gap-4 mx-4;
+    padding-top: 12rem;
+    grid-template-columns: repeat(auto-fill, minmax(24rem, 1fr));
+}

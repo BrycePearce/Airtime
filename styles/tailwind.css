@@ -10,7 +10,7 @@ html {
 }
 
 body {
-  @apply bg-gray-900;
+  @apply bg-dark-theme-primary text-gray-300;
 }
 
 a {

@@ -5,7 +5,12 @@ module.exports = {
   },
   purge: [],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        'dark-theme-light': "#242526",
+        'dark-theme-primary': "#18191a"
+      }
+    },
   },
   variants: {},
   plugins: ['tailwindcss'],
