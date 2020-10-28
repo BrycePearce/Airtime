@@ -1,16 +1,17 @@
 import React from "react";
 
 // Components
-import CardGrid from "./card-grid/card-grid";
 import Header from "./header/header";
 import Meta from "./meta";
 
-const Layout: React.FC = () => {
+const Layout: React.FC = (props) => {
   return (
     <>
       <Meta />
       <Header />
-      <CardGrid />
+      <div style={{marginTop: '4rem'}}>
+        {props.children}
+      </div>
     </>
   );
 };
