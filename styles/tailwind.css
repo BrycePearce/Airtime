@@ -10,9 +10,17 @@ html {
 }
 
 body {
-  @apply bg-dark-theme-primary text-gray-300;
+  @apply text-gray-300 bg-dark-theme-primary;
 }
 
 a {
   @apply cursor-pointer;
+}
+
+.header-margin {
+  margin-top: 4rem;
+}
+
+.font-size-small {
+  font-size: small;
 }

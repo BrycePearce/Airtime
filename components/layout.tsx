@@ -9,9 +9,7 @@ const Layout: React.FC = (props) => {
     <>
       <Meta />
       <Header />
-      <div style={{marginTop: '4rem'}}>
-        {props.children}
-      </div>
+      <div className="header-margin">{props.children}</div>
     </>
   );
 };

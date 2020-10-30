@@ -4,6 +4,7 @@ import Head from "next/head";
 const Meta: React.FC = () => {
   return (
     <Head>
+      <html lang="en" />
       <link
         rel="apple-touch-icon"
         sizes="180x180"
