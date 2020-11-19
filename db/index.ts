@@ -1,6 +1,6 @@
+import 'reflect-metadata';
 import { createConnection, ConnectionOptions, Connection } from "typeorm";
 import { Show, Genre, Language, Network } from './entity';
-import 'reflect-metadata';
 
 export const initializeDatabase = async (): Promise<Connection> => {
     const options: ConnectionOptions = {

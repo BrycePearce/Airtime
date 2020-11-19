@@ -13,7 +13,7 @@ export class Show extends Base {
     genres: Partial<Genre[]>
 
     @OneToMany(() => Language, language => language.name, { cascade: true })
-    language: Partial<Genre[]>
+    language: Partial<Language[]>
 
     @Column()
     scheduleTime: string;
@@ -27,7 +27,7 @@ export class Show extends Base {
     @Column({ type: 'date' })
     firstAired: Date;
 
-    @Column({ type: 'simple-json' }) // will need to update this when I have a full list
+    @Column({ type: 'simple-json', nullable: true }) // will need to update this when I have a full list
     externalIds: {
         tvrage: string,
         thetvdb: string,
