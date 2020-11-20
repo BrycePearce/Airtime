@@ -1,25 +1,23 @@
 import React, { useEffect, useState } from "react";
 import cardStyles from "./card-grid.module.scss";
 import axiosInstance from "../../lib/axios";
+import { Show } from "../../db/entity";
 
 const CardGrid: React.FC = () => {
   const CardList = () => {
-    const [data, setData] = useState();
+    const [shows, setData] = useState();
 
     useEffect(() => {
       getPopular();
     }, []);
 
     const getPopular = async () => {
-      const { data } = await axiosInstance.get(
-        `https://api.themoviedb.org/3/tv/popular?api_key=#{api_key}&language=en-US&page=1`
-      );
-      setData(data);
+      const { data } = await axiosInstance.get("api/hello");
+      const shows: Show[] = data.shows;
+      setData(shows);
     };
 
-    if (data?.results) {
-      const shows = data.results;
-      console.log(shows);
+    if (shows) {
       return shows.map((show) => {
         return (
           <article className="relative flex flex-col bg-dark-theme-light">
@@ -50,11 +48,7 @@ const CardGrid: React.FC = () => {
               <li>Fantasy</li>
             </ul>
             <div className="flex">
-              <img
-                className="poster"
-                src={`https://image.tmdb.org/t/p/w154${show.poster_path}`}
-                alt="poster"
-              />
+              <img className="poster" src={show.poster_path} alt="poster" />
               <div className={cardStyles.showInformation}>
                 <div className="uppercase text-dark-primary">mappa</div>
                 <div className="text-gray-300 text-opacity-75 font-size-small">
