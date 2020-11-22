@@ -15,15 +15,15 @@ export interface TvMazeEpisode {
     _links: TvMazeLinks;
 }
 
-interface TvMazeLinks {
+export interface TvMazeLinks {
     self: Self;
 }
 
-interface Self {
+export interface Self {
     href: string;
 }
 
-interface Show {
+export interface Show {
     id: number;
     url: string;
     name: string;
@@ -38,7 +38,7 @@ interface Show {
     rating: Rating;
     weight: number;
     network: Network;
-    webChannel: Network;
+    webChannel: WebChannel;
     externals: Externals;
     image: Image;
     summary: string;
@@ -46,40 +46,46 @@ interface Show {
     _links: ShowLinks;
 }
 
-interface ShowLinks {
-    self: Self;
-    previousepisode: Self;
-    nextepisode: Self;
-}
-
-interface Externals {
-    tvrage: null;
-    thetvdb: number;
-    imdb: string;
-}
-
-interface Image {
-    medium: string;
-    original: string;
-}
-
-interface Network {
+interface WebChannel {
     id: number;
     name: string;
     country: Country;
 }
 
-interface Country {
+export interface ShowLinks {
+    self: Self;
+    previousepisode: Self;
+    nextepisode: Self;
+}
+
+export interface Externals {
+    tvrage: null;
+    thetvdb: number;
+    imdb: string;
+}
+
+export interface Image {
+    medium: string;
+    original: string;
+}
+
+export interface Network {
+    id: number;
+    name: string;
+    country: Country;
+}
+
+export interface Country {
     name: string;
     code: string;
     timezone: string;
 }
 
-interface Rating {
+export interface Rating {
     average: number;
 }
 
-interface Schedule {
+export interface Schedule {
     time: string;
     days: string[];
 }

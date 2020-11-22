@@ -19,5 +19,5 @@ export class Network extends Base {
     language: string
 
     @ManyToMany(() => Show, show => show.networks)
-    shows: Partial<Show[]>
+    shows: Show[]
 }

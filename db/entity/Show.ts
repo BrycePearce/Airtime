@@ -10,10 +10,10 @@ export class Show extends Base {
     name: string;
 
     @OneToMany(() => Genre, genre => genre.name, { cascade: true })
-    genres: Partial<Genre[]>
+    genres: Genre[]
 
     @OneToMany(() => Language, language => language.name, { cascade: true })
-    language: Partial<Language[]>
+    language: Language[]
 
     @Column()
     scheduleTime: string;
@@ -63,5 +63,5 @@ export class Show extends Base {
 
     @ManyToMany(() => Network, network => network.shows)
     @JoinTable()
-    networks: Partial<Network[]>
+    networks: Network[]
 };

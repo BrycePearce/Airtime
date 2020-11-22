@@ -28,7 +28,7 @@ async function updateDB() {
     const currentTime = utcToZonedTime(new Date(), "America/New_York");
     const db = await initializeDatabase();
     const showRepository = db.getRepository(Show);
-    const { data } = await Tvmaze.getScheduleRange(currentTime, addDays(currentTime, 1));
+    const { data } = await Tvmaze.getScheduleRange(currentTime, addDays(currentTime, 6));
     console.log(data)
     // const shows = mapDataToShows(data[0] as Show[]);
     // console.log(shows)

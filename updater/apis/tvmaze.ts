@@ -3,8 +3,9 @@ import axiosInstance from "../../lib/axios";
 
 // Types / Entities
 import { Show, Genre, Language, Network } from '../../db/entity';
+import { TvMazeWebEpisode } from './../types/tvMazeWebEpisode';
+import { TvMazeEpisode, } from '../types/tvMazeEpisode';
 import { ApiResponse } from './../types/ApiResponse';
-import { TvMazeEpisode } from '../types/tvMaze';
 
 const rootPath = "https://api.tvmaze.com";
 
@@ -24,15 +25,19 @@ export async function getFullSchedule(): Promise<ApiResponse> {
  */
 export async function getScheduleRange(start: Date, end: Date): Promise<ApiResponse> {
     const range = eachDayOfInterval({ start, end });
-    const promises = range.flatMap((date) => [getScheduleByDay(date), getWebScheduleByDay(date)]);
+    let promises: Promise<ApiResponse>[] = [];
+    range.forEach(date => {
+        promises.push(getScheduleByDay(date), getWebScheduleByDay(date));
+    });
     try {
         const schedule = await Promise.all(promises);
-        const data = schedule.reduce<Show[]>((fullSchedule, dailySchedule) => {
-            const { data } = dailySchedule;
-            const dailyShowEntities = data.map(episode => tvmazeEpisodeToShowEntity(episode));
-            return [...fullSchedule, dailyShowEntities];
+        const data = schedule.reduce<Show[]>((fullSchedule, dailyEpisodes) => {
+            const showEntities = (dailyEpisodes.data as Array<TvMazeEpisode | TvMazeWebEpisode>)
+                .map(episode => normalizeEpisode(episode))
+                .map(episode => tvmazeEpisodeToShowEntity(episode));
+            return fullSchedule.concat(...showEntities);
         }, []);
-        return { data: data as Show[] };
+        return { data };
     } catch (error) {
         return { error };
     }
@@ -43,7 +48,7 @@ export async function getScheduleRange(start: Date, end: Date): Promise<ApiRespo
  * @param day 
  * @param countryCode 
  * 
- * getScheduleByDay is a complete list of episodes that air in a given country on a given date. Including web episodes.
+ * getScheduleByDay is a complete list of episodes that air in a given country on a given date.
  * Episodes are returned in the order in which they are aired, and full information about the episode and the corresponding show is included.
  *
  */
@@ -78,101 +83,55 @@ async function getWebScheduleByDay(day: Date, countryCode?: string | null): Prom
 }
 
 function tvmazeEpisodeToShowEntity(tvMazeShow: TvMazeEpisode): Show {
-    const show = new Show();
-    if (tvMazeShow.show?.externals) {
-        show.externalIds = {
-            tvrage: tvMazeShow.show.externals?.tvrage,
-            thetvdb: tvMazeShow.show.externals?.thetvdb.toString(),
-            imdb: tvMazeShow.show.externals?.imdb
-        };
-    }
-    let genres: Genre[] = [];
-    tvMazeShow.show.genres.forEach(genre => {
-        console.log(2);
-        const showGenre = new Genre();
-        showGenre.name = genre;
-        genres.push(showGenre);
-    });
-    show.genres = genres;
+    let show: Show = new Show();
+    // show.name = tvMazeShow.name;
+    // show.externalIds.tvrage = null;
+    // show.externalIds.thetvdb = null;
+    // show.externalIds.imdb = null;
+    // let genres: Genre[] = [ null
+    // tvMazeShow.show.genres.forEach(genre => {
+    //     console.log(2);
+    //     const showGenre = new Genre();
+    //     showGenre.name = genre;
+    //     genres.push(showGenre);
+    // });
+    // show.genres = genres;
 
-    let language = new Language();
-    language.name = tvMazeShow.show.language;
-    show.language = [language];
-    show.name = tvMazeShow.name;
+    // let language = new Language();
+    // language.name = tvMazeShow.show.language;
+    // show.language = [language];
+    // show.name = tvMazeShow.name;
 
-    const network = new Network();
-    network.name = tvMazeShow.show.network.name;
-    network.country = tvMazeShow.show.network.country.name;
-    network.countryCode = tvMazeShow.show.network.country.code;
-    network.timezone = tvMazeShow.show.network.country.timezone;
 
+    let network = new Network();
+    network.name = tvMazeShow?.show?.network?.name;
     show.networks = [network];
-    show.officialSite = tvMazeShow.show.officialSite;
-    show.premiered = tvMazeShow.show?.premiered;
-    show.ratingAverage = tvMazeShow.show?.rating.average.toString();
-    show.runtime = tvMazeShow.runtime.toString();
-    show.scheduleDate = tvMazeShow.show?.schedule.days[0]; // todo: update to be an array (dates)
-    show.scheduleTime = tvMazeShow.show?.schedule.time;
-    show.status = tvMazeShow.show?.status;
-    show.summary = tvMazeShow.show?.summary;
-    show.weight = tvMazeShow.show?.weight;
+
+    // show.officialSite = tvMazeShow.show.officialSite;
+    // show.premiered = tvMazeShow.show?.premiered;
+    // show.ratingAverage = tvMazeShow.show?.rating.average.toString();
+    // show.runtime = tvMazeShow.runtime.toString();
+    // show.scheduleDate = tvMazeShow.show?.schedule.days[0]; // todo: update to be an array (dates)
+    // show.scheduleTime = tvMazeShow.show?.schedule.time;
+    // show.status = tvMazeShow.show?.status;
+    // show.summary = tvMazeShow.show?.summary;
+    // show.weight = tvMazeShow.show?.weight;
     return show;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*
-  "Hazel's Mishap",
-  "Axel's Lucky Day",
-  'Episode 43',
-  'From Norman, OK',
-  'Baby Mouth',
-  'Gobble Head',
-  'Home Sweet Home: Perfect as Pie',
-  '2020-11-21',
-  'Turkey Day To-Do List',
-  'TBA',
-  'Trash Dash',
-  'Dishes that Keep Giving',
-  'Save the Took Took',
-  'Fossil Frenzy',
-  'Of Mice and Munks',
-  'Simon Saves the World',
-  'Ole Miss at Texas A&M',
-  'Motor City Favorites',
-  'Suhs',
-  'Nov 21 Sat',
-  'The Thousand Pranks War: Part I',
-  'Episode 9',
-  'Abbott & Costello Meet Frankenstein',
-  'Yard Sale',
-  'Stairway to Hell',
-  "Titanic's Lost Evidence",
-  'The Miz',
-  'Biological Mama Drama',
-  'The Hissing Lynx',
-  'Rolling Hills Asylum',
-  'Polar Bear Opposites',
-  'UFC 255: Figueiredo vs. Perez',
-  'November 21, 2020',
-  'Navigating a New Normal',
-  'The Case Against Nicole Addimando',
-  'The Mavericks: En Espanol',
-  'Jared Logan & Clayton English'
-
-
-
-
-*/
+/**
+ * 
+ * @param episode
+ * 
+ * Replaces the "_embedded" key in a web episode, and moves the "show" key up one level.
+ * In short, converts type TvMazeWebEpisode to TvMazeEpisode
+ */
+function normalizeEpisode(episode: TvMazeEpisode | TvMazeWebEpisode): TvMazeEpisode {
+    const webEpisode = episode as TvMazeWebEpisode;
+    if (webEpisode.hasOwnProperty("_embedded")) {
+        const showProperty = JSON.parse(JSON.stringify(webEpisode._embedded.show));
+        delete webEpisode._embedded;
+        showProperty.show = showProperty;
+    }
+    return webEpisode as TvMazeEpisode;
+}
