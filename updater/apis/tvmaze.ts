@@ -6,6 +6,7 @@ import { Show, Genre, Language, Network } from '../../db/entity';
 import { TvMazeWebEpisode } from './../types/tvMazeWebEpisode';
 import { TvMazeEpisode, } from '../types/tvMazeEpisode';
 import { ApiResponse } from './../types/ApiResponse';
+import fs from 'fs';
 
 const rootPath = "https://api.tvmaze.com";
 
@@ -33,8 +34,9 @@ export async function getScheduleRange(start: Date, end: Date): Promise<ApiRespo
         const schedule = await Promise.all(promises);
         const data = schedule.reduce<Show[]>((fullSchedule, dailyEpisodes) => {
             const showEntities = (dailyEpisodes.data as Array<TvMazeEpisode | TvMazeWebEpisode>)
-                .map(episode => normalizeEpisode(episode))
-                .map(episode => tvmazeEpisodeToShowEntity(episode));
+                .map(episode => normalizeEpisode(episode)) // web episode -> episode
+                .filter(isInvalidShow) // remove malformed episodes
+                .map(episode => tvmazeEpisodeToShowEntity(episode)); // episode -> Show
             return fullSchedule.concat(...showEntities);
         }, []);
         return { data };
@@ -83,40 +85,44 @@ async function getWebScheduleByDay(day: Date, countryCode?: string | null): Prom
 }
 
 function tvmazeEpisodeToShowEntity(tvMazeShow: TvMazeEpisode): Show {
-    let show: Show = new Show();
-    // show.name = tvMazeShow.name;
-    // show.externalIds.tvrage = null;
-    // show.externalIds.thetvdb = null;
-    // show.externalIds.imdb = null;
-    // let genres: Genre[] = [ null
-    // tvMazeShow.show.genres.forEach(genre => {
-    //     console.log(2);
-    //     const showGenre = new Genre();
-    //     showGenre.name = genre;
-    //     genres.push(showGenre);
-    // });
-    // show.genres = genres;
+    try {
+        let show: Show = new Show();
+        show.name = tvMazeShow.show.name;
+        show.externalIds = {
+            tvrage: tvMazeShow.show.externals.tvrage ? tvMazeShow.show.externals.tvrage.toString() : null,
+            thetvdb: tvMazeShow.show.externals.thetvdb ? tvMazeShow.show.externals.thetvdb.toString() : null,
+            imdb: tvMazeShow.show.externals.imdb
+        }
+        if (tvMazeShow.show.genres) {
+            show.genres = tvMazeShow.show.genres.map(genre => ({ name: genre } as Genre));
+        }
 
-    // let language = new Language();
-    // language.name = tvMazeShow.show.language;
-    // show.language = [language];
-    // show.name = tvMazeShow.name;
+        const language = new Language();
+        language.name = tvMazeShow.show.language;
+        show.language = [language];
 
+        if (tvMazeShow.show.network) {
+            let network = new Network();
 
-    let network = new Network();
-    network.name = tvMazeShow?.show?.network?.name;
-    show.networks = [network];
+            network.name = tvMazeShow.show.network.name;
+            show.networks = [network];
+        }
 
-    // show.officialSite = tvMazeShow.show.officialSite;
-    // show.premiered = tvMazeShow.show?.premiered;
-    // show.ratingAverage = tvMazeShow.show?.rating.average.toString();
-    // show.runtime = tvMazeShow.runtime.toString();
-    // show.scheduleDate = tvMazeShow.show?.schedule.days[0]; // todo: update to be an array (dates)
-    // show.scheduleTime = tvMazeShow.show?.schedule.time;
-    // show.status = tvMazeShow.show?.status;
-    // show.summary = tvMazeShow.show?.summary;
-    // show.weight = tvMazeShow.show?.weight;
-    return show;
+        show.officialSite = tvMazeShow.show.officialSite;
+        show.premiered = tvMazeShow.show.premiered;
+        if (tvMazeShow.show.rating) {
+            show.ratingAverage = tvMazeShow.show.rating.average ? tvMazeShow.show.rating.average.toString() : null;
+        }
+        show.runtime = tvMazeShow.runtime.toString();
+        show.scheduleDate = tvMazeShow.show.schedule.days[0]; // todo: update to be an array (dates)
+        show.scheduleTime = tvMazeShow.show.schedule.time;
+        show.status = tvMazeShow.show.status;
+        show.summary = tvMazeShow.show.summary;
+        show.weight = tvMazeShow.show.weight;
+        return show;
+    } catch {
+        fs.appendFile('malformedEpisodes.json', JSON.stringify(tvMazeShow), () => { });
+    }
 }
 
 /**
@@ -134,4 +140,8 @@ function normalizeEpisode(episode: TvMazeEpisode | TvMazeWebEpisode): TvMazeEpis
         showProperty.show = showProperty;
     }
     return webEpisode as TvMazeEpisode;
+}
+
+function isInvalidShow(episode: TvMazeEpisode) {
+    return episode.hasOwnProperty("show");
 }

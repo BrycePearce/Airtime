@@ -9,7 +9,7 @@ export interface TvMazeEpisode {
     airtime: string;
     airstamp: Date;
     runtime: number;
-    image: null;
+    image: string;
     summary: string;
     show: Show;
     _links: TvMazeLinks;
@@ -59,7 +59,7 @@ export interface ShowLinks {
 }
 
 export interface Externals {
-    tvrage: null;
+    tvrage: number;
     thetvdb: number;
     imdb: string;
 }
