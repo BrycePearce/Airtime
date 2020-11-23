@@ -41,7 +41,7 @@ export class Show extends Base {
     runtime: string;
 
     @Column()
-    premiered: string;
+    premiered: string; // todo: probably update this to be an object like premier info with premierDate, and hasPremeired
 
     @Column()
     officialSite: string;

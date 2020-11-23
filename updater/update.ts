@@ -12,14 +12,18 @@
  */
 
 require('dotenv').config({ path: '../.env' });
-import { Show } from './../db/entity/index';
 import { initializeDatabase } from "../db/index";
-import { utcToZonedTime } from 'date-fns-tz';
+
+// endpoints
 import * as Tvmaze from "./apis/tvmaze";
 
 // types
-import { CronJob } from "cron";
+import { Show } from './../db/entity/index';
+
+// third party
+import { utcToZonedTime } from 'date-fns-tz';
 import { addDays } from "date-fns";
+import { CronJob } from "cron";
 
 const cronJob = new CronJob('* * * * *', updateDB, null, true, "America/Chicago", null, true); // currently runs every 1min
 cronJob.start();
@@ -38,86 +42,3 @@ async function updateDB() {
     // });
     // await showRepository.save(shows);
 };
-
-
-/*
-[
-    {
-        "id": 339141,
-        "url": "http://www.tvmaze.com/episodes/339141/clarence-1x26-rough-riders-elementary",
-        "name": "Rough Riders Elementary",
-        "season": 1,
-        "number": 26,
-        "type": "regular",
-        "airdate": "2014-12-01",
-        "airtime": "07:30",
-        "airstamp": "2014-12-01T12:30:00+00:00",
-        "runtime": 11,
-        "image": null,
-        "summary": "",
-        "show": {
-            "id": 5617,
-            "url": "http://www.tvmaze.com/shows/5617/clarence",
-            "name": "Clarence",
-            "type": "Animation",
-            "language": "English",
-            "genres": [
-                "Comedy",
-                "Family"
-            ],
-            "status": "Ended",
-            "runtime": 15,
-            "premiered": "2014-02-17",
-            "officialSite": null,
-            "schedule": {
-                "time": "16:00",
-                "days": [
-                    "Monday",
-                    "Tuesday",
-                    "Wednesday",
-                    "Thursday"
-                ]
-            },
-            "rating": {
-                "average": null
-            },
-            "weight": 60,
-            "network": {
-                "id": 11,
-                "name": "Cartoon Network",
-                "country": {
-                    "name": "United States",
-                    "code": "US",
-                    "timezone": "America/New_York"
-                }
-            },
-            "webChannel": null,
-            "externals": {
-                "tvrage": null,
-                "thetvdb": 271421,
-                "imdb": "tt3061050"
-            },
-            "image": {
-                "medium": "http://static.tvmaze.com/uploads/images/medium_portrait/22/56691.jpg",
-                "original": "http://static.tvmaze.com/uploads/images/original_untouched/22/56691.jpg"
-            },
-            "summary": "<p>The series revolves around <b>Clarence</b>, an optimistic boy who wants to do everything because everything is amazing.</p>",
-            "updated": 1574378362,
-            "_links": {
-                "self": {
-                    "href": "http://api.tvmaze.com/shows/5617"
-                },
-                "previousepisode": {
-                    "href": "http://api.tvmaze.com/episodes/1471922"
-                }
-            }
-        },
-        "_links": {
-            "self": {
-                "href": "http://api.tvmaze.com/episodes/339141"
-            }
-        }
-    },
-]
-*/
-

@@ -1,23 +1,14 @@
 import { eachDayOfInterval, format } from 'date-fns';
 import axiosInstance from "../../lib/axios";
+import fs from 'fs';
 
 // Types / Entities
 import { Show, Genre, Language, Network } from '../../db/entity';
 import { TvMazeWebEpisode } from './../types/tvMazeWebEpisode';
 import { TvMazeEpisode, } from '../types/tvMazeEpisode';
 import { ApiResponse } from './../types/ApiResponse';
-import fs from 'fs';
 
 const rootPath = "https://api.tvmaze.com";
-
-export async function getFullSchedule(): Promise<ApiResponse> {
-    try {
-        const request = await axiosInstance.get(`${rootPath}/schedule/full`);
-        return { data: request.data };
-    } catch (error) {
-        return { error };
-    };
-}
 
 /**
  * 
@@ -64,7 +55,6 @@ async function getScheduleByDay(day: Date, countryCode = "US"): Promise<ApiRespo
     };
 }
 
-
 export async function getShowByName(showName: string): Promise<ApiResponse> {
     try {
         const request = await axiosInstance.get(`${rootPath}/singlesearch/shows?q=${showName}`);
@@ -86,7 +76,7 @@ async function getWebScheduleByDay(day: Date, countryCode?: string | null): Prom
 
 function tvmazeEpisodeToShowEntity(tvMazeShow: TvMazeEpisode): Show {
     try {
-        let show: Show = new Show();
+        const show: Show = new Show();
         show.name = tvMazeShow.show.name;
         show.externalIds = {
             tvrage: tvMazeShow.show.externals.tvrage ? tvMazeShow.show.externals.tvrage.toString() : null,
