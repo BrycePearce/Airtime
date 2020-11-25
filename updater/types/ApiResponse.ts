@@ -1,9 +1,9 @@
-import { TvMazeWebEpisode } from './tvMazeWebEpisode';
-import { TvMazeEpisode } from './tvMazeEpisode';
-import { Show } from '../../db/entity';
 import { AxiosError } from 'axios';
 
+import { TvMazeWebEpisode } from './tvMazeWebEpisode';
+import { TvMazeEpisode, Externals } from './tvMazeEpisode';
+
 export interface ApiResponse {
-    data?: TvMazeEpisode[] | TvMazeWebEpisode[] | TvMazeEpisode | Show[],
+    data?: TvMazeWebEpisode[] | TvMazeEpisode | Externals[],
     error?: AxiosError
 }

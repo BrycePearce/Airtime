@@ -3,10 +3,10 @@ import axiosInstance from "../../lib/axios";
 import fs from 'fs';
 
 // Types / Entities
-import { Show, Genre, Language, Network } from '../../db/entity';
 import { TvMazeWebEpisode } from './../types/tvMazeWebEpisode';
 import { TvMazeEpisode, } from '../types/tvMazeEpisode';
 import { ApiResponse } from './../types/ApiResponse';
+import { Externals } from './../types/tvMazeEpisode';
 
 const rootPath = "https://api.tvmaze.com";
 
@@ -23,12 +23,12 @@ export async function getScheduleRange(start: Date, end: Date): Promise<ApiRespo
     });
     try {
         const schedule = await Promise.all(promises);
-        const data = schedule.reduce<Show[]>((fullSchedule, dailyEpisodes) => {
-            const showEntities = (dailyEpisodes.data as Array<TvMazeEpisode | TvMazeWebEpisode>)
+        const data = schedule.reduce<Externals[]>((fullSchedule, dailyEpisodes) => {
+            const externalEpisodeKeys = (dailyEpisodes.data as Array<TvMazeEpisode | TvMazeWebEpisode>)
                 .map(episode => normalizeEpisode(episode)) // web episode -> episode
                 .filter(isInvalidShow) // remove malformed episodes
-                .map(episode => tvmazeEpisodeToShowEntity(episode)); // episode -> Show
-            return fullSchedule.concat(...showEntities);
+                .map(episode => tvmazeEpisodeToExternalKeys(episode)); // episode -> Externals
+            return fullSchedule.concat(...externalEpisodeKeys);
         }, []);
         return { data };
     } catch (error) {
@@ -74,42 +74,15 @@ async function getWebScheduleByDay(day: Date, countryCode?: string | null): Prom
     };
 }
 
-function tvmazeEpisodeToShowEntity(tvMazeShow: TvMazeEpisode): Show {
+function tvmazeEpisodeToExternalKeys(tvMazeShow: TvMazeEpisode): Externals {
     try {
-        const show: Show = new Show();
-        show.name = tvMazeShow.show.name;
-        show.externalIds = {
-            tvrage: tvMazeShow.show.externals.tvrage ? tvMazeShow.show.externals.tvrage.toString() : null,
-            thetvdb: tvMazeShow.show.externals.thetvdb ? tvMazeShow.show.externals.thetvdb.toString() : null,
-            imdb: tvMazeShow.show.externals.imdb
+        if (tvMazeShow.show.externals) {
+            return {
+                tvrage: tvMazeShow.show.externals.tvrage,
+                thetvdb: tvMazeShow.show.externals.thetvdb,
+                imdb: tvMazeShow.show.externals.imdb
+            };
         }
-        if (tvMazeShow.show.genres) {
-            show.genres = tvMazeShow.show.genres.map(genre => ({ name: genre } as Genre));
-        }
-
-        const language = new Language();
-        language.name = tvMazeShow.show.language;
-        show.language = [language];
-
-        if (tvMazeShow.show.network) {
-            let network = new Network();
-
-            network.name = tvMazeShow.show.network.name;
-            show.networks = [network];
-        }
-
-        show.officialSite = tvMazeShow.show.officialSite;
-        show.premiered = tvMazeShow.show.premiered;
-        if (tvMazeShow.show.rating) {
-            show.ratingAverage = tvMazeShow.show.rating.average ? tvMazeShow.show.rating.average.toString() : null;
-        }
-        show.runtime = tvMazeShow.runtime.toString();
-        show.scheduleDate = tvMazeShow.show.schedule.days[0]; // todo: update to be an array (dates)
-        show.scheduleTime = tvMazeShow.show.schedule.time;
-        show.status = tvMazeShow.show.status;
-        show.summary = tvMazeShow.show.summary;
-        show.weight = tvMazeShow.show.weight;
-        return show;
     } catch {
         fs.appendFile('malformedEpisodes.json', JSON.stringify(tvMazeShow), () => { });
     }
