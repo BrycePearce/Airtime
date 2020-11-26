@@ -24,7 +24,7 @@ export async function getScheduleRange(start: Date, end: Date): Promise<ApiRespo
 };
 
 async function getAllPages(path: string): Promise<TmdbShow[]> {
-    async function* getPage() {
+    async function* pageGenerator() {
         let url = `${rootUrl}${path}&page=1`;
         while (url) {
             const { data } = await axiosInstance.get<TmdbResponse>(url);
@@ -34,7 +34,7 @@ async function getAllPages(path: string): Promise<TmdbShow[]> {
         }
     };
 
-    const iterator = getPage();
+    const iterator = pageGenerator();
 
     let data: TmdbShow[] = [];
     for await (const show of iterator) {

@@ -1,9 +1,7 @@
 import { AxiosError } from 'axios';
-
-import { TvMazeWebEpisode } from './tvMazeWebEpisode';
-import { TvMazeEpisode, Externals } from './tvMazeEpisode';
+import { TmdbShow } from './TmdbShow';
 
 export interface ApiResponse {
-    data?: TvMazeWebEpisode[] | TvMazeEpisode | Externals[],
+    data?: TmdbShow[],
     error?: AxiosError
 }
