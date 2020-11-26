@@ -16,31 +16,30 @@ export async function getScheduleRange(start: Date, end: Date): Promise<ApiRespo
     const formattedEnd = format(end, "yyyy-MM-dd");
     const path = `/discover/tv?api_key=${process.env.TMDB_KEY}&air_date.gte=${formattedStart}&air_date.lte=${formattedEnd}&timezone=${encodeURIComponent(constants.timezone)}`;
     try {
-        const { data } = await getAllPages(path);
-        console.log(data)
+        const data = await getAllPages(path);
         return { data };
     } catch (error) {
         return { error };
     }
 };
 
-async function getAllPages(path: string): Promise<ApiResponse> {
-    const fetchPage = async (page = 1, result: TmdbShow[] = []): Promise<TmdbShow[]> => {
-        try {
-            const { data } = await axiosInstance.get<TmdbResponse>(`${rootUrl}${path}&page=${page}`);
-            if (data.page < data.total_pages) {
-                result = [result, data.results].flat();
-                return fetchPage(page + 1, result);
-            }
-            return result;
-        } catch (error) {
-            // todo: log/retry?
-            console.log(error)
-            throw new Error(error);
+async function getAllPages(path: string): Promise<TmdbShow[]> {
+    async function* getPage() {
+        let url = `${rootUrl}${path}&page=1`;
+        while (url) {
+            const { data } = await axiosInstance.get<TmdbResponse>(url);
+            // if we have more pages to traverse, update the page number and keep going
+            url = data.page < data.total_pages ? `${rootUrl}${path}&page=${data.page + 1}` : null;
+            yield data.results;
         }
     };
 
-    const data = await fetchPage();
+    const iterator = getPage();
 
-    return { data };
-}
+    let data: TmdbShow[] = [];
+    for await (const show of iterator) {
+        data = [...data, ...show];
+    }
+
+    return data;
+};
