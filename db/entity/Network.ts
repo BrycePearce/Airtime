@@ -7,16 +7,10 @@ export class Network extends Base {
     name: string
 
     @Column()
-    country: string
+    logoPath: string
 
     @Column()
     countryCode: string
-
-    @Column()
-    timezone: string
-
-    @Column()
-    language: string
 
     @ManyToMany(() => Show, show => show.networks)
     shows: Show[]

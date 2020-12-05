@@ -1,8 +1,5 @@
-import { Network } from './Network';
-import { Language } from './Language';
-import { Genre } from './Genre';
 import { Column, Entity, JoinTable, ManyToMany, OneToMany } from 'typeorm';
-import { Base } from './Base'
+import { Language, Network, Genre, Base, Season } from './index';
 
 @Entity()
 export class Show extends Base {
@@ -10,58 +7,58 @@ export class Show extends Base {
     name: string;
 
     @OneToMany(() => Genre, genre => genre.name, { cascade: true })
-    genres: Genre[]
+    genres: Genre[];
 
     @OneToMany(() => Language, language => language.name, { cascade: true })
-    language: Language[]
+    languages: Language[];
 
-    @Column()
-    scheduleTime: string;
+    @OneToMany(() => Season, season => season.show)
+    seasons: Season[];
 
-    @Column() // this probably needs to be an array at some point, maybe its own table, so that I can query by date
-    scheduleDate: string;
+    @Column({ type: 'real' })
+    popularity: Number;
 
-    @Column()
-    ratingAverage: string;
-
-    @Column({ type: 'date' })
+    @Column({ type: 'date', nullable: true })
     firstAired: Date;
 
     @Column({ type: 'simple-json', nullable: true }) // will need to update this when I have a full list
     externalIds: {
-        tvrage: string,
-        thetvdb: string,
-        imdb: string
+        tmdb: Number,
+        tvdb: Number,
+        imdb: string,
+        facebook: string,
+        instagram: string,
+        twitter: string
     };
 
     @Column()
     status: string;
 
     @Column()
-    runtime: string;
-
-    @Column()
-    premiered: string; // todo: probably update this to be an object like premier info with premierDate, and hasPremeired
+    runtime: Number;
 
     @Column()
     officialSite: string;
 
-    @Column({ type: 'smallint' })
-    weight: number;
+    @Column()
+    posterPath: string;
 
     @Column()
-    poster_path: string;
+    numEpisodes: number;
 
     @Column()
-    backdrop_path: string;
+    numSeasons: number;
 
     @Column()
-    summary: string;
+    backdropPath: string;
+
+    @Column()
+    overview: string;
 
     @Column({ type: 'boolean' })
     airing: boolean;
 
     @ManyToMany(() => Network, network => network.shows)
     @JoinTable()
-    networks: Network[]
+    networks: Network[];
 };
