@@ -7,17 +7,14 @@ export class Episode extends Base {
     @ManyToOne(() => Season, season => season.episodes)
     season: Season
 
-    @Column()
-    airDate: string;
+    @Column({ type: "date" })
+    airDate: Date;
 
     @Column()
     episodeNumber: number;
 
     @Column()
     seasonNumber: number;
-
-    @Column({ nullable: true })
-    posterPath: string;
 
     @Column()
     name: string;

@@ -35,27 +35,27 @@ export class Show extends Base {
     status: string;
 
     @Column()
-    runtime: Number;
-
-    @Column()
     officialSite: string;
 
-    @Column()
+    @Column({ nullable: true })
     posterPath: string;
 
-    @Column()
+    @Column({ type: "smallint" })
     numEpisodes: number;
 
-    @Column()
+    @Column({ type: "smallint" })
     numSeasons: number;
 
-    @Column()
+    @Column({ nullable: true })
     backdropPath: string;
+
+    @Column({ type: 'date', nullable: true })
+    lastAired: Date;
 
     @Column()
     overview: string;
 
-    @Column({ type: 'boolean' })
+    @Column({ type: "boolean" })
     airing: boolean;
 
     @ManyToMany(() => Network, network => network.shows)
