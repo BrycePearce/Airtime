@@ -3,21 +3,25 @@ import cardStyles from "./card-grid.module.scss";
 import axiosInstance from "../../lib/axios";
 import { Show } from "../../db/entity";
 
+import tw, { css } from "twin.macro";
+
+const Input = tw.input`border hover:border-black`;
+
 const CardGrid: React.FC = () => {
   const CardList = () => {
-    const [shows, setData] = useState();
+    const [shows, setData] = useState([]);
 
-    useEffect(() => {
-      getPopular();
-    }, []);
+    // useEffect(() => {
+    //   getPopular();
+    // }, []);
 
-    const getPopular = async () => {
-      const { data } = await axiosInstance.get("api/hello");
-      const shows: Show[] = data.shows;
-      setData(shows);
-    };
+    // const getPopular = async () => {
+    //   const { data } = await axiosInstance.get("api/hello");
+    //   const shows: Show[] = data.shows;
+    //   setData(shows);
+    // };
 
-    if (shows) {
+    if (shows.length > 0) {
       return shows.map((show) => {
         return (
           <article className="relative flex flex-col bg-dark-theme-light">
@@ -74,7 +78,7 @@ const CardGrid: React.FC = () => {
         );
       });
     }
-    return "<ul></ul>";
+    return <Input />;
   };
 
   return (
