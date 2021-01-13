@@ -1,8 +1,8 @@
 import 'reflect-metadata';
 import { Show, Genre, Language, Network, Season, Episode } from './entity';
-import { createConnection, ConnectionOptions, Connection } from "typeorm";
+import { createConnection, ConnectionOptions, Connection, getConnection } from "typeorm";
 
-export const initializeDatabase = async (): Promise<Connection> => {
+export const initializeDatabase = (): () => Promise<Connection> => {
     const options: ConnectionOptions = {
         type: "postgres",
         host: process.env.TYPEORM_HOST,
@@ -13,6 +13,14 @@ export const initializeDatabase = async (): Promise<Connection> => {
         database: process.env.TYPEORM_DATABASE,
         synchronize: true // verifies that db matches entities
     };
-    const connection = await createConnection(options);
+
+    const connection = async () => {
+        try {
+            return getConnection();
+        } catch {
+            return await createConnection(options);
+        }
+    }
+
     return connection;
 };
