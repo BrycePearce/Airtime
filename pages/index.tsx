@@ -3,7 +3,7 @@ import React from "react";
 
 // Components
 import Layout from "../components/layout";
-import CardGrid from "../components/card-grid/card-grid";
+import Shows from "../components/shows/shows";
 
 export default function Home() {
   return (
@@ -12,7 +12,7 @@ export default function Home() {
         <title>Create Next App</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <CardGrid />
+      <Shows />
     </Layout>
   );
 }
